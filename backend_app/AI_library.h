@@ -44,7 +44,9 @@ inline double operator*(const std::vector<double>& a, const std::vector<double>&
 
 double computeLoss(const std::vector<double>& y, const std::vector<double>& y_hat);
 
-void trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y);
+Weights trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y);
+
+void exportWeightsToCSV(const Weights& weights);
 
 class NeuralNetwork
 {

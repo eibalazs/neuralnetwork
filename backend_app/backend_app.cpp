@@ -14,7 +14,9 @@ int main()
     const auto Y_train = loadMNISTlabels(root_folder + "/train-labels.idx1-ubyte");
     printf("Y_train readed successfully.\n");
 
-    trainNeuralNet(X_train, Y_train);
+    const auto weights = trainNeuralNet(X_train, Y_train);
+
+    exportWeightsToCSV(weights);
 
     //const auto X_test = loadMNISTimages(root_folder + "/t10k-images.idx3-ubyte");
     //const auto Y_test = loadMNISTlabels(root_folder + "/t10k-labels.idx1-ubyte");

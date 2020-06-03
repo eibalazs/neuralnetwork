@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include <algorithm>
 #include "AI_library.h"
 
@@ -91,10 +92,10 @@ double computeLoss(const std::vector<double>& Y, const std::vector<double>& Y_ha
     return loss;
 }
 
-void trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y)
+Weights trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y)
 {
     const double learning_rate = 1.0;
-    const size_t num_of_iterations = 2000;
+    const size_t num_of_iterations = 2;
     /* This is the number of pixels within an image */
     const auto n_x = X.getNumberOfColumns();
     /* This is the number of images in the data set */
@@ -146,4 +147,14 @@ void trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y)
     }
 
     printf("Final cost: %f\n", cost);
+
+    return W;
+}
+
+void exportWeightsToCSV(const Weights& weights)
+{
+    std::ofstream csv;
+    csv.open("W.csv");
+    std::copy(std::begin(weights), std::end(weights), std::ostream_iterator<double>(csv, "\n"));
+    csv.close();
 }

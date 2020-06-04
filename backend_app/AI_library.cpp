@@ -95,7 +95,7 @@ double computeLoss(const std::vector<double>& Y, const std::vector<double>& Y_ha
 Weights trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y)
 {
     const double learning_rate = 1.0;
-    const size_t num_of_iterations = 2;
+    const size_t num_of_iterations = 2000;
     /* This is the number of pixels within an image */
     const auto n_x = X.getNumberOfColumns();
     /* This is the number of images in the data set */

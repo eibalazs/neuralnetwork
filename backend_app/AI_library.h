@@ -18,7 +18,8 @@ inline MNISTlabels operator-(const MNISTlabels& lhs, const MNISTlabels& rhs) {
 	return result;
 }
 
-inline MNISTlabels operator*(const double& lhs, const MNISTlabels& rhs) {
+template<typename T>
+inline std::vector<double> operator*(const double& lhs, const std::vector<T>& rhs) {
 	MNISTlabels result(rhs.size());
 	for (size_t i = 0; i < rhs.size(); ++i) {
 		result[i] = lhs * rhs[i];
@@ -34,7 +35,8 @@ MNISTlabels loadMNISTlabels(const std::string& path);
 
 inline double sigmoid(const double& x) { return 1.0 / (1.0 + exp(-x)); }
 
-inline double operator*(const std::vector<double>& a, const std::vector<double>& b)
+template<typename T, typename U> 
+double operator*(const std::vector<T>& a, const std::vector<U>& b)
 {
 	if (a.size() != b.size()) {
 		throw std::runtime_error("The size of the vectors given as parameters for dot product are not equal!");

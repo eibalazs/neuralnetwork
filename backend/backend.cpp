@@ -5,24 +5,17 @@
 
 int main()
 {
-    std::ifstream path_txt("../MNIST_path.txt");
-    std::string MNIST_path;
-
-    if (path_txt.is_open()) {
-        printf("MNIST_path.txt opened.\n");
-        getline(path_txt, MNIST_path);
-    }
-    else {
-        printf("Could not open MNIST_path.txt!\n");
-    }
-
-    const auto X_train = loadMNISTimages(MNIST_path + "/train-images.idx3-ubyte");
+    loadMNISTimages();
     printf("X_train readed successfully.\n");
 
-    const auto Y_train = loadMNISTlabels(MNIST_path + "/train-labels.idx1-ubyte");
+    loadMNISTlabels();
     printf("Y_train readed successfully.\n");
 
-    const auto weights = trainNeuralNet(X_train, Y_train);
+    initializeTraining();
+    printf("Training initialized.\n");
+
+    while(true)
+        trainNeuralNet();
 
     exportWeightsToCSV(weights);
 
@@ -42,9 +35,9 @@ void reverseInt(int& i)
     i = ((int)c1 << 24) + ((int)c2 << 16) + ((int)c3 << 8) + c4;
 }
 
-MNISTimages loadMNISTimages(const std::string& path) 
+void loadMNISTimages() 
 {
-    std::ifstream file(path, std::ios::binary);
+    std::ifstream file(MNIST_path + "/train-images.idx3-ubyte", std::ios::binary);
     if (file.is_open()) 
     {
         int magic_number, n_images, n_rows, n_cols = 0;
@@ -70,14 +63,14 @@ MNISTimages loadMNISTimages(const std::string& path)
             }
         }
 
-        return mnist_images;
+        X_train = mnist_images;
     }
-    else throw std::runtime_error("Could not open MNIST image file at " + path);
+    else throw std::runtime_error("Could not open MNIST image file at " + MNIST_path);
 }
 
-MNISTlabels loadMNISTlabels(const std::string& path)
+void loadMNISTlabels()
 {
-    std::ifstream file(path, std::ios::binary);
+    std::ifstream file(MNIST_path + "/train-labels.idx1-ubyte", std::ios::binary);
     if (file.is_open()) 
     {
         int magic_number, n_labels = 0;
@@ -96,9 +89,9 @@ MNISTlabels loadMNISTlabels(const std::string& path)
             mnist_labels[i] = label == 0 ? 1 : 0;
         }
 
-        return mnist_labels;
+        Y_train = mnist_labels;
     }
-    else throw std::runtime_error("Could not open MNIST label file at " + path);
+    else throw std::runtime_error("Could not open MNIST label file at " + MNIST_path);
 }
 
 double computeLoss(const std::vector<double>& Y, const std::vector<double>& Y_hat) 
@@ -119,14 +112,13 @@ double computeLoss(const std::vector<double>& Y, const std::vector<double>& Y_ha
     return loss;
 }
 
-Weights trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y)
+void initializeTraining()
 {
-    const double learning_rate = 1.0;
-    const size_t num_of_iterations = 2000;
+    learning_rate = 1.0;
     /* This is the number of pixels within an image */
-    const auto n_x = X.getNumberOfColumns();
+    n_x = X_train.getNumberOfColumns();
     /* This is the number of images in the data set */
-    const auto m = X.getNumberOfRows();
+    m = X_train.getNumberOfRows();
 
     std::random_device random_device;
     std::mt19937 mersenne_engine{ random_device() };
@@ -136,16 +128,22 @@ Weights trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y)
         return 0.01 * distribution(mersenne_engine);
     };
 
-    auto W = Weights(n_x);
-    auto dW = Weights(n_x);
+    weights = Weights(n_x);
+    std::generate(std::begin(weights), std::end(weights), generate_random);
 
-    std::generate(std::begin(W), std::end(W), generate_random);
-    double b = 0.0;
-    double db = 0.0;
+    dW = Weights(n_x);
 
-    double cost;
+    b = 0.0;
+    db = 0.0;
+}
 
-    for (int i = 0; i < num_of_iterations; ++i) 
+void trainNeuralNet()
+{
+    const auto& X = X_train;
+    const auto& Y = Y_train;
+    auto& W = weights;
+
+    while (true) 
     {
         std::vector<double> Z(m);
         std::vector<double> A(m);
@@ -170,12 +168,8 @@ Weights trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y)
         W = W - learning_rate * dW;
         b = b - learning_rate * db;
 
-        printf("Epoch %i, cost %f\n", i, cost);
+        printf("Cost: %f\n", cost);
     }
-
-    printf("Final cost: %f\n", cost);
-
-    return W;
 }
 
 void exportWeightsToCSV(const Weights& weights)

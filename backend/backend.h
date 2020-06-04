@@ -9,11 +9,45 @@
 
 #include "types.h"
 
+static std::string MNIST_path = "C:/work/neuralnetwork/data";
+
+static MNISTimages X_train;
+
+static MNISTlabels Y_train;
+
+static Weights weights;
+
+static Weights dW;
+
+static double learning_rate;
+
+static size_t n_x;
+static size_t m;
+
+static double b;
+static double db;
+
+double cost;
+
 #ifdef BACKEND_EXPORTS
 #define BACKEND_API __declspec(dllexport)
 #else
 #define BACKEND_API __declspec(dllimport)
 #endif // BACKEND_EXPORTS
+
+/**
+ * Backend API
+ */
+	
+extern "C" BACKEND_API int main();
+
+extern "C" BACKEND_API void loadMNISTimages();
+
+extern "C" BACKEND_API void loadMNISTlabels();
+
+extern "C" BACKEND_API void initializeTraining();
+
+extern "C" BACKEND_API void trainNeuralNet();
 
 inline MNISTlabels operator-(const MNISTlabels& lhs, const MNISTlabels& rhs) {
 	if (lhs.size() != rhs.size())
@@ -34,13 +68,7 @@ inline std::vector<double> operator*(const double& lhs, const std::vector<T>& rh
 	return result;
 }
 
-extern "C" BACKEND_API int main();
-
 void reverseInt(int& i);
-
-MNISTimages loadMNISTimages(const std::string& path);
-
-MNISTlabels loadMNISTlabels(const std::string& path);
 
 inline double sigmoid(const double& x) { return 1.0 / (1.0 + exp(-x)); }
 
@@ -55,18 +83,4 @@ double operator*(const std::vector<T>& a, const std::vector<U>& b)
 
 double computeLoss(const std::vector<double>& y, const std::vector<double>& y_hat);
 
-Weights trainNeuralNet(const MNISTimages& X, const MNISTlabels& Y);
-
 void exportWeightsToCSV(const Weights& weights);
-
-class NeuralNetwork
-{
-public:
-	NeuralNetwork();
-	~NeuralNetwork() = default;
-
-private:
-
-
-
-};

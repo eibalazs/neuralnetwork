@@ -7,10 +7,12 @@ class Matrix
 {
 private:
 	std::vector<T> data;
-	const size_t n_rows;
-	const size_t n_cols;
+	size_t n_rows = 0;
+	size_t n_cols = 0;
 
 public:
+
+	Matrix() = default;
 
 	Matrix(const size_t& n_rows, const size_t& n_cols) : n_rows(n_rows), n_cols(n_cols), data(n_rows* n_cols) {};
 

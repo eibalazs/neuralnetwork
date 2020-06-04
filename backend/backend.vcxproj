@@ -151,14 +151,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AI_library.h" />
+    <ClInclude Include="backend.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AI_library.cpp" />
+    <ClCompile Include="backend.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

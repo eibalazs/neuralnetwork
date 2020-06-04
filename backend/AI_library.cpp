@@ -5,12 +5,21 @@
 
 int main()
 {
-    const std::string root_folder = "C:/work/neuralnetwork/data/";
+    std::ifstream path_txt("../MNIST_path.txt");
+    std::string MNIST_path;
 
-    const auto X_train = loadMNISTimages(root_folder + "/train-images.idx3-ubyte");
+    if (path_txt.is_open()) {
+        printf("MNIST_path.txt opened.\n");
+        getline(path_txt, MNIST_path);
+    }
+    else {
+        printf("Could not open MNIST_path.txt!\n");
+    }
+
+    const auto X_train = loadMNISTimages(MNIST_path + "/train-images.idx3-ubyte");
     printf("X_train readed successfully.\n");
 
-    const auto Y_train = loadMNISTlabels(root_folder + "/train-labels.idx1-ubyte");
+    const auto Y_train = loadMNISTlabels(MNIST_path + "/train-labels.idx1-ubyte");
     printf("Y_train readed successfully.\n");
 
     const auto weights = trainNeuralNet(X_train, Y_train);

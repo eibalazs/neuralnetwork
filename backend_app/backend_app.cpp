@@ -10,12 +10,12 @@ int main()
 		return 1;
 	}
 
-	auto main = (int (*)(void))GetProcAddress(backend_dll, "main");
+	auto dll_main = (int (*)(void))GetProcAddress(backend_dll, "main");
 
-	if (!main) {
-		printf("Could not get address of main function!\n");
+	if (!dll_main) {
+		printf("Could not get address of dll main function!\n");
 		return 1;
 	}
 
-	main();
+	dll_main();
 }

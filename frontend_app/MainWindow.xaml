@@ -23,6 +23,7 @@
         <Button x:Name="trainButton" Grid.Column="0" Grid.Row="0" Margin="20,58,17,54" Width="124" HorizontalAlignment="Center" RenderTransformOrigin="0.517,-1.313" Click="TrainClick">Train neural net</Button>
         <Button x:Name="pauseButton" Grid.Column="0" Margin="20,88,17,24" Width="124" HorizontalAlignment="Center" RenderTransformOrigin="0.478,-1.46" Click="PauseClick">Pause training</Button>
         <TextBox x:Name="textBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="98,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <Image x:Name="image" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="146,26,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100"/>
 
     </Grid>
 </Window>

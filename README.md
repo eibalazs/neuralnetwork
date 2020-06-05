@@ -13,4 +13,4 @@ In order to try it, please do the following steps:
 * Build the solution, this generates the backend.dll to the output directory
 * Then open backend_app/backend_app.sln and frontend_app/frontend_app.sln and build them (in case of the backend_app also on x86 platform!)
 * Copy the dll into the output directory of each solution.
-* Run any of the two application. In case of backend app to change between train and test mode define or undefine TRAIN macro at the top of backend.h.
+* Run any of the two application. In case of backend app to change between train and test mode define or undefine TRAIN macro at the top of backend.h. When switching it is necessary to rebuild the dll and re-copy it near the backend_app.dll

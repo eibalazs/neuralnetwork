@@ -3,25 +3,49 @@
 #include <fstream>
 #include "backend.h"
 
+
 int main()
 {
+    printf("Welcome to the neural network trainer/tester program!\n");
+    printf("To change between train and test mode define or undefine TRAIN macro at the top of backend.h!\n");
+    printf("Loading data...\n");
+
     loadMNISTimages();
-    printf("X_train readed successfully.\n");
+    printf("X readed successfully.\n");
 
     loadMNISTlabels();
-    printf("Y_train readed successfully.\n");
+    printf("Y readed successfully.\n");
 
+    /* This is the number of pixels within an image */
+    n_x = X.getNumberOfColumns();
+    /* This is the number of images in the data set */
+    m = X.getNumberOfRows();
+
+#ifdef TRAIN
+
+    printf("The current mode is training.\n");
     initializeTraining();
     printf("Training initialized.\n");
+    printf("Start training...\n");
+    trainNeuralNet();
 
-    while(true)
-        trainNeuralNet();
+#else
 
-    exportWeightsToCSV(weights);
+    printf("The current mode is testing.\n");
+
+    importWeightsFromCSV();
+    importBiasFromCSV();
+
+    testNeuralNet();
+
+#endif
+
 
     //const auto X_test = loadMNISTimages(root_folder + "/t10k-images.idx3-ubyte");
     //const auto Y_test = loadMNISTlabels(root_folder + "/t10k-labels.idx1-ubyte");
 }
+
+double getCost() { return cost; };
 
 void reverseInt(int& i)
 {
@@ -37,8 +61,13 @@ void reverseInt(int& i)
 
 void loadMNISTimages() 
 {
+#ifdef TRAIN
     std::ifstream file(MNIST_path + "/train-images.idx3-ubyte", std::ios::binary);
-    if (file.is_open()) 
+#else
+    std::ifstream file(MNIST_path + "/t10k-images.idx3-ubyte", std::ios::binary);
+#endif
+
+    if (file.is_open())
     {
         int magic_number, n_images, n_rows, n_cols = 0;
 
@@ -63,14 +92,19 @@ void loadMNISTimages()
             }
         }
 
-        X_train = mnist_images;
+        X = mnist_images;
     }
     else throw std::runtime_error("Could not open MNIST image file at " + MNIST_path);
 }
 
 void loadMNISTlabels()
 {
+#ifdef TRAIN
     std::ifstream file(MNIST_path + "/train-labels.idx1-ubyte", std::ios::binary);
+#else
+    std::ifstream file(MNIST_path + "/t10k-labels.idx1-ubyte", std::ios::binary);
+#endif
+
     if (file.is_open()) 
     {
         int magic_number, n_labels = 0;
@@ -89,7 +123,7 @@ void loadMNISTlabels()
             mnist_labels[i] = label == 0 ? 1 : 0;
         }
 
-        Y_train = mnist_labels;
+        Y = mnist_labels;
     }
     else throw std::runtime_error("Could not open MNIST label file at " + MNIST_path);
 }
@@ -115,10 +149,6 @@ double computeLoss(const std::vector<double>& Y, const std::vector<double>& Y_ha
 void initializeTraining()
 {
     learning_rate = 1.0;
-    /* This is the number of pixels within an image */
-    n_x = X_train.getNumberOfColumns();
-    /* This is the number of images in the data set */
-    m = X_train.getNumberOfRows();
 
     std::random_device random_device;
     std::mt19937 mersenne_engine{ random_device() };
@@ -128,8 +158,8 @@ void initializeTraining()
         return 0.01 * distribution(mersenne_engine);
     };
 
-    weights = Weights(n_x);
-    std::generate(std::begin(weights), std::end(weights), generate_random);
+    W = Weights(n_x);
+    std::generate(std::begin(W), std::end(W), generate_random);
 
     dW = Weights(n_x);
 
@@ -139,17 +169,13 @@ void initializeTraining()
 
 void trainNeuralNet()
 {
-    const auto& X = X_train;
-    const auto& Y = Y_train;
-    auto& W = weights;
-
     while (true) 
     {
         std::vector<double> Z(m);
         std::vector<double> A(m);
 
         for (size_t j = 0; j < m; ++j) {
-            Z[j] = W * X[j];
+            Z[j] = W * X[j] + b;
         }
 
         std::transform(std::begin(Z), std::end(Z), std::begin(A), [](const double& z) {
@@ -169,13 +195,83 @@ void trainNeuralNet()
         b = b - learning_rate * db;
 
         printf("Cost: %f\n", cost);
+        exportWeightsToCSV();
+        exportBiasToCSV();
     }
 }
 
-void exportWeightsToCSV(const Weights& weights)
+void testNeuralNet()
+{
+    std::vector<double> Z(m);
+    std::vector<double> A(m);
+
+    for (size_t j = 0; j < m; ++j) {
+        Z[j] = W * X[j];
+    }
+
+    std::transform(std::begin(Z), std::end(Z), std::begin(A), [](const double& z) {
+        return sigmoid(z); });
+
+    unsigned int num_of_0_correct = 0;
+    unsigned int num_of_non_0_correct = 0;
+    unsigned int num_of_0_incorrect = 0;
+    unsigned int num_of_non_0_incorrect = 0;
+
+    for (size_t k = 0; k < m; ++k) {
+        if (Y[k] == 0 && A[k] <= 0.5)
+            num_of_non_0_correct++;
+        else if (Y[k] == 0 && A[k] > 0.5)
+            num_of_non_0_incorrect++;
+        else if (Y[k] == 1 && A[k] <= 0.5)
+            num_of_0_incorrect++;
+        else num_of_0_correct++;
+    }
+
+    printf("Confusion matrix:\n%i  %i\n%i  %i\n", num_of_non_0_correct, num_of_0_incorrect, num_of_non_0_incorrect, num_of_0_correct);
+    system("pause");
+}
+
+void exportWeightsToCSV()
 {
     std::ofstream csv;
     csv.open("W.csv");
-    std::copy(std::begin(weights), std::end(weights), std::ostream_iterator<double>(csv, "\n"));
+    std::copy(std::begin(W), std::end(W), std::ostream_iterator<double>(csv, "\n"));
     csv.close();
+}
+
+void exportBiasToCSV()
+{
+    std::ofstream csv;
+    csv.open("b.csv");
+    csv << b;
+    csv.close();
+}
+
+void importWeightsFromCSV()
+{
+    std::ifstream csv;
+    csv.open("W.csv");
+    if (csv.is_open()) {
+        W.clear();
+        printf("Weight csv is opened.\n");
+        std::string str;
+        while (std::getline(csv, str))
+        {
+            W.push_back(stod(str));
+        }
+    }
+    else printf("Weight csv not found!\n");
+}
+
+void importBiasFromCSV()
+{
+    std::ifstream csv;
+    csv.open("b.csv");
+    if (csv.is_open()) {
+        printf("Bias csv is opened.\n");
+        std::string str;
+        std::getline(csv, str);
+        b = stod(str);
+    }
+    else printf("Bias csv not found!\n");
 }

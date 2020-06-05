@@ -9,13 +9,15 @@
 
 #include "types.h"
 
+//#define TRAIN
+
 static std::string MNIST_path = "C:/work/neuralnetwork/data";
 
-static MNISTimages X_train;
+static MNISTimages X;
 
-static MNISTlabels Y_train;
+static MNISTlabels Y;
 
-static Weights weights;
+static Weights W;
 
 static Weights dW;
 
@@ -48,6 +50,10 @@ extern "C" BACKEND_API void loadMNISTlabels();
 extern "C" BACKEND_API void initializeTraining();
 
 extern "C" BACKEND_API void trainNeuralNet();
+
+extern "C" BACKEND_API void testNeuralNet();
+
+extern "C" BACKEND_API double getCost();
 
 inline MNISTlabels operator-(const MNISTlabels& lhs, const MNISTlabels& rhs) {
 	if (lhs.size() != rhs.size())
@@ -83,4 +89,10 @@ double operator*(const std::vector<T>& a, const std::vector<U>& b)
 
 double computeLoss(const std::vector<double>& y, const std::vector<double>& y_hat);
 
-void exportWeightsToCSV(const Weights& weights);
+void exportWeightsToCSV();
+
+void exportBiasToCSV();
+
+void importWeightsFromCSV();
+
+void importBiasFromCSV();

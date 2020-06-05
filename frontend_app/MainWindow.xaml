@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EIB_GE_test"
         mc:Ignorable="d"
-        Title="Train and test neural network" Height="450" Width="800">
+        Title="Train and test neural network" Height="378.838" Width="327.367">
     <Grid Margin="10,0,10,10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="161*"/>
@@ -19,10 +19,9 @@
         </Grid.RowDefinitions>
 
         <!-- Load button -->
-        <Button x:Name="loadDataButton" Grid.Column="0" Grid.Row="0" Margin="20,28,17,84" Width="124" HorizontalAlignment="Center" Click="LoadDataClick">Load data set</Button>
-        <Button x:Name="trainButton" Grid.Column="0" Grid.Row="0" Margin="20,58,17,54" Width="124" HorizontalAlignment="Center" RenderTransformOrigin="0.517,-1.313" Click="TrainClick">Train neural net</Button>
-        <Button x:Name="pauseButton" Grid.Column="0" Margin="20,88,17,24" Width="124" HorizontalAlignment="Center" RenderTransformOrigin="0.478,-1.46" Click="PauseClick">Pause training</Button>
-        <TextBox x:Name="textBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="98,28,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="loadDataButton" Margin="10,11,10,10" Width="279" HorizontalAlignment="Center" Click="LoadDataClick" Grid.ColumnSpan="3">Load data set</Button>
+        <Button x:Name="trainButton" Grid.Row="1" Margin="10" Width="279" HorizontalAlignment="Center" RenderTransformOrigin="0.517,-1.313" Click="TrainClick" Grid.ColumnSpan="3">Train neural net</Button>
+        <Button x:Name="pauseButton" Margin="10,9,10,10" Width="279" HorizontalAlignment="Center" RenderTransformOrigin="0.478,-1.46" Click="PauseClick" Grid.Row="2" Grid.ColumnSpan="3">Pause training</Button>
         <Image x:Name="image" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="146,26,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100"/>
 
     </Grid>

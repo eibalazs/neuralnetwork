@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Drawing;
@@ -26,42 +27,16 @@ namespace EIB_GE_test
 
     public partial class MainWindow : Window
     {
-        bool train_runs = false;
+        bool train_clicked = false;
         bool train_paused = false;
+        bool train_runs = false;
         Thread training_thread;
+
         public MainWindow()
         {
             InitializeComponent();
             trainButton.IsEnabled = false;
             pauseButton.IsEnabled = false;
-
-            Bitmap bitmap = new Bitmap(28,28);
-            var color = System.Drawing.Color.Green;
-
-            for (int i = 0; i<28; ++i)
-            {
-                for(int j = 0; j < 28;++j)
-                    bitmap.SetPixel(i, j, color);
-
-            }
-
-            image.Source = BitmapToImageSource(bitmap);
-        }
-
-        private BitmapImage BitmapToImageSource(Bitmap bitmap)
-        {
-            using (MemoryStream memory = new MemoryStream())
-            {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
-                memory.Position = 0;
-                BitmapImage bitmapimage = new BitmapImage();
-                bitmapimage.BeginInit();
-                bitmapimage.StreamSource = memory;
-                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapimage.EndInit();
-
-                return bitmapimage;
-            }
         }
 
         private void LoadDataClick(object sender, RoutedEventArgs e)
@@ -87,9 +62,9 @@ namespace EIB_GE_test
 
         private void TrainClick(object sender, RoutedEventArgs e)
         {
-            train_runs = !train_runs;
+            train_clicked = !train_clicked;
 
-            if (train_runs)
+            if (train_clicked)
             {
                 loadDataButton.IsEnabled = false;
                 trainButton.Content = "Stop training";
@@ -99,6 +74,7 @@ namespace EIB_GE_test
 
                 training_thread = new Thread(trainNeuralNet);
                 training_thread.Start();
+                train_runs = true;
             }
             else
             {
@@ -107,6 +83,7 @@ namespace EIB_GE_test
                 pauseButton.IsEnabled = false;
 
                 training_thread.Abort();
+                train_runs = false;
             }
         }
 

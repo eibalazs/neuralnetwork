@@ -150,6 +150,11 @@ void initializeTraining()
 {
     learning_rate = 1.0;
 
+    /* This is the number of pixels within an image */
+    n_x = X.getNumberOfColumns();
+    /* This is the number of images in the data set */
+    m = X.getNumberOfRows();
+
     std::random_device random_device;
     std::mt19937 mersenne_engine{ random_device() };
     std::normal_distribution<double> distribution{ 0.0, 1.0 };

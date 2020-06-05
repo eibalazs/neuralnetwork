@@ -9,7 +9,7 @@
 
 #include "types.h"
 
-//#define TRAIN
+#define TRAIN
 
 static std::string MNIST_path = "C:/work/neuralnetwork/data";
 
